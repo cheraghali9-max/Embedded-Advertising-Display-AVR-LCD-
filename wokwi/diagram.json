@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "author": "Seif Said",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 77.4, "left": -10.2, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -111.77, "left": 16, "attrs": {} },
+    { "type": "wokwi-gnd", "id": "gnd1", "top": 297.6, "left": 316.2, "attrs": {} }
+  ],
+  "connections": [
+    [ "uno:5V", "lcd1:VDD", "red", [ "v38.3", "h-188.2", "v-249.6", "h96" ] ],
+    [ "lcd1:D4", "uno:4", "gray", [ "v28.8", "h57.6" ] ],
+    [ "lcd1:RS", "uno:0", "blue", [ "v19.2", "h163.5" ] ],
+    [ "lcd1:VSS", "uno:GND.1", "green", [ "v28.8", "h57.6" ] ],
+    [ "lcd1:RW", "uno:GND.1", "green", [ "v28.8", "h-0.1" ] ],
+    [ "lcd1:D5", "uno:5", "gold", [ "v9.6", "h38.5" ] ],
+    [ "lcd1:D7", "uno:7", "white", [ "v0" ] ],
+    [ "lcd1:D6", "uno:6", "green", [ "v48", "h0.2" ] ],
+    [ "uno:GND.2", "gnd1:GND", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
