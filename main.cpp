@@ -22,6 +22,50 @@
 
 #define BUTTON_IS_CLICKED(PINB,BUTTON_PIN) !BIT_CHECK(PINB,BUTTON_PIN)
 
+//Struktur för kunderna
+typedef struct 
+{
+    const char* name;
+    int percentage;
+    const char* messages[3];
+    int messageCount;
+    bool specialRules;
+} Advertiser;
+
+// Kunder, procentvis och deras meddelanden
+Advertiser customers[] = {
+    {"Harry", 50 , {"Köp bill hos Harry", "En god bil affär(för Harry!)","Hedelige Harrys Bilar"}, 3, false};
+    {"Farmor Anak", 30, {"Köp paj hos Farmor ANka", "Skynda innan Mårten ätit alla pajer"}, 2, false};
+    {"Ptter", 15, {"Låt Ptter bygga åt dig", "Bygga svart? Ring Petter"}, 2, true};
+    {"Långben", 40, {"Mysterier? Ring Lånben", "Långben fixar biffen"},2, false};
+    {"IOT Reklambyrå", 10, {"Synas här? IOT:s Reklambyrå"}, 1, false};
+};
+int customerCount = 5;
+
+int lastCustomerIndex = -1; // Att inte räkan en kund 2 gångar i rad
+
+// Slumpa kunderna procentuellt baserad på deras belopp
+
+int pickCustomer() {
+    int totalVikt = 0;
+      int weights[5];
+
+    for (int i = 0; i < customerCount; i++) {
+        if (i == lastCustomerIndex) weights[i] = 0;
+        else weights[i] = customers[i].percentage;
+        totalWeight += weights[i];
+}
+
+ int rnd = rand() % totalVikt;
+    for (int i = 0; i < customerCount; i++) {
+        if (rnd < weights[i]) return i;
+        rnd -= weights[i];
+    }
+
+    return 0;
+} 
+
+// Funktion att visa meddelande på LCDn????
  
 
 int main(void){

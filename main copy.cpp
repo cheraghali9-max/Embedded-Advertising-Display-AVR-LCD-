@@ -36,6 +36,7 @@ int main(void){
         _delay_ms(1000);
         BIT_CLEAR(PORTB,LED_PIN);
         _delay_ms(1000);
+        
         // if(!BIT_CHECK(PINB,BUTTON_PIN)){ 
         //     _delay_ms(100); //Delay = vi ska göra bättre debouncing senare!
         //     printf("Clicking");
