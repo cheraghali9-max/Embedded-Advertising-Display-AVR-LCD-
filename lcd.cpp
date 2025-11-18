@@ -1,3 +1,4 @@
+#define __AVR_ATmega32U4__
 #include "lcd.h"
 
 HD44780::HD44780() {

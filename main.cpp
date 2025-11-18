@@ -1,8 +1,12 @@
+#define __AVR_ATmega32U4__
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "lcd.h"
 #include "uart.h"
 
@@ -19,22 +23,72 @@
 #define BIT_FLIP(a,b) ((a) ^= (1ULL<<(b)))
 #define BIT_CHECK(a,b) (!!((a) & (1ULL<<(b)))) 
 
-
 #define BUTTON_IS_CLICKED(PINB,BUTTON_PIN) !BIT_CHECK(PINB,BUTTON_PIN)
 
- 
+typedef enum
+{
+    harrys,
+    Pajer_AB,
+    detektivbyrå,
+    Svartbyggen,
+    buyAdvert,
+}advert;
+
+advert returnRandomAdvert();
 
 int main(void){
-    init_serial();
     HD44780 lcd;
 
     lcd.Initialize(); // Initialize the LCD
     lcd.Clear();      // Clear the LCD
 
-    lcd.WriteText((char *)"Hej hej");
-    printf("Hej hej\n");
-    int r = 12;
-    printf("Hej 2 %d\n",r);
+    int lastAdvert = buyAdvert;
+
+    while(1)
+    {
+        char result[15] = "result: ";
+        long long int lastResult = 0;
+
+        // for (int index = 16; index >= 0; index--)
+        // {
+        //     lcd.Clear();
+        //     lcd.GoTo(index, 0);
+        //     lcd.WriteText(harris);
+        //     _delay_ms(500);
+        // }
+        int currentAdvert;
+        do
+        {
+            currentAdvert = returnRandomAdvert();
+        } while (lastAdvert == currentAdvert);
+        lastAdvert = currentAdvert;
+
+        switch (currentAdvert)
+        {
+        case harrys:
+            strcat(result, "harrys");
+            break;
+        case Pajer_AB:
+            strcat(result, "pajer_ab");
+            break;
+        case detektivbyrå:
+            strcat(result, "detetivbyra");
+            break;
+        case Svartbyggen:
+            strcat(result, "svartbyggen");
+            break;
+        case buyAdvert:
+            strcat(result, "buy advert");
+            break;
+        default:
+            printf("error novalue returned");
+            break;
+        }
+
+        lcd.WriteText(result);
+        _delay_ms(1000);
+        lcd.Clear();
+    }
     // // //Sätt till INPUT_PULLUP
     // BIT_CLEAR(DDRB,BUTTON_PIN); // INPUT MODE
     // BIT_SET(PORTB,BUTTON_PIN); 
@@ -46,4 +100,39 @@ int main(void){
     while(1){
     }
     return 0;
+}
+
+void scrollText()
+{
+
+}
+
+advert returnRandomAdvert()
+{
+    // time(null) will always return same value
+    srand(time(NULL));
+    int value = rand() % (14499 + 1);
+
+    printf("%d ", value);
+    
+    if (value < 5000)
+    { // Hederlige Harrys Bilar
+        return harrys;
+    }
+    else if (value < 8000 && value >= 5000)
+    { // Farmor Ankas Pajer AB
+        return Pajer_AB;
+    }
+    else if (value < 12000 && value >= 8000)
+    { // Långbens detektivbyrå
+        return detektivbyrå;
+    }
+    else if (value < 13500 && value >= 12000)
+    { // Svarte Petters Svartbyggen
+        return Svartbyggen;
+    }
+    else
+    {// our own advert
+        return buyAdvert;
+    }
 }
