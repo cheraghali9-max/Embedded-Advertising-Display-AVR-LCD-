@@ -4,8 +4,7 @@
   "editor": "wokwi",
   "parts": [
     { "type": "wokwi-arduino-uno", "id": "uno", "top": 202.2, "left": 18.6, "attrs": {} },
-    { "type": "wokwi-lcd1602", "id": "lcd", "top": 3.43, "left": 16, "attrs": {} },
-    { "type": "wokwi-ds1307", "id": "rtc1", "top": 436.2, "left": 355.3, "attrs": {} }
+    { "type": "wokwi-lcd1602", "id": "lcd", "top": 3.43, "left": 16, "attrs": {} }
   ],
   "connections": [
     [ "uno:GND.1", "lcd:VSS", "black", [ "v-51", "*", "h0", "v18" ] ],
@@ -16,11 +15,7 @@
     [ "uno:4", "lcd:D4", "green", [ "v-24", "*", "h0", "v20" ] ],
     [ "uno:5", "lcd:D5", "brown", [ "v-28", "*", "h0", "v20" ] ],
     [ "uno:6", "lcd:D6", "gold", [ "v-32", "*", "h0", "v20" ] ],
-    [ "uno:7", "lcd:D7", "gray", [ "v-36", "*", "h0", "v20" ] ],
-    [ "rtc1:GND", "uno:GND.2", "black", [ "h0" ] ],
-    [ "rtc1:5V", "uno:5V", "red", [ "h0" ] ],
-    [ "rtc1:SDA", "uno:A4", "green", [ "h0" ] ],
-    [ "rtc1:SCL", "uno:A5", "green", [ "h0" ] ]
+    [ "uno:7", "lcd:D7", "gray", [ "v-36", "*", "h0", "v20" ] ]
   ],
   "dependencies": {}
 }

@@ -35,6 +35,7 @@ typedef enum
 }advert;
 
 advert returnRandomAdvert();
+void scrollText(char *text);
 
 int main(void){
     HD44780 lcd;
@@ -47,15 +48,7 @@ int main(void){
     while(1)
     {
         char result[15] = "result: ";
-        long long int lastResult = 0;
 
-        // for (int index = 16; index >= 0; index--)
-        // {
-        //     lcd.Clear();
-        //     lcd.GoTo(index, 0);
-        //     lcd.WriteText(harris);
-        //     _delay_ms(500);
-        // }
         int currentAdvert;
         do
         {
@@ -65,27 +58,27 @@ int main(void){
 
         switch (currentAdvert)
         {
-        case harrys:
-            strcat(result, "harrys");
-            break;
-        case Pajer_AB:
-            strcat(result, "pajer_ab");
-            break;
-        case detektivbyrå:
-            strcat(result, "detetivbyra");
-            break;
-        case Svartbyggen:
-            strcat(result, "svartbyggen");
-            break;
-        case buyAdvert:
-            strcat(result, "buy advert");
-            break;
-        default:
-            printf("error novalue returned");
-            break;
+            case harrys:
+                strcat(result, "harrys");
+                break;
+            case Pajer_AB:
+                strcat(result, "pajer_ab");
+                break;
+            case detektivbyrå:
+                strcat(result, "detetivbyra");
+                break;
+            case Svartbyggen:
+                strcat(result, "svartbyggen");
+                break;
+            case buyAdvert:
+                strcat(result, "buy advert");
+                break;
+            default:
+                printf("error novalue returned");
+                break;
         }
 
-        lcd.WriteText(result);
+        scrollText(result);
         _delay_ms(1000);
         lcd.Clear();
     }
@@ -102,9 +95,34 @@ int main(void){
     return 0;
 }
 
-void scrollText()
+void scrollText(char *text)
 {
+    HD44780 lcd;
 
+    lcd.Initialize(); // Initialize the LCD
+    lcd.Clear();      // Clear the LCD
+    
+    for (int x = 16; x >= 0; x--)
+    {
+        char rText[20] = " ";
+        strncpy(rText, text, 16-x);
+        lcd.Clear();
+        lcd.GoTo(x, 0);
+        lcd.WriteText(rText);
+
+        _delay_ms(500);
+    }
+    for (int index = 1; index <= (int)strlen(text); index++)
+    {
+        char rText[20] = " ";
+        lcd.Clear();
+        lcd.GoTo(0, 0);
+        strncpy(rText, text + index, 16);
+        lcd.WriteText(rText);
+
+        _delay_ms(500);
+    }
+    
 }
 
 advert returnRandomAdvert()
