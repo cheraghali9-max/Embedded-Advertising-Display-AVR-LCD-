@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdlib.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -34,11 +35,11 @@ typedef struct
 
 // Kunder, procentvis och deras meddelanden
 Advertiser customers[] = {
-    {"Harry", 50 , {"Köp bill hos Harry", "En god bil affär(för Harry!)","Hedelige Harrys Bilar"}, 3, false};
-    {"Farmor Anak", 30, {"Köp paj hos Farmor ANka", "Skynda innan Mårten ätit alla pajer"}, 2, false};
-    {"Ptter", 15, {"Låt Ptter bygga åt dig", "Bygga svart? Ring Petter"}, 2, true};
-    {"Långben", 40, {"Mysterier? Ring Lånben", "Långben fixar biffen"},2, false};
-    {"IOT Reklambyrå", 10, {"Synas här? IOT:s Reklambyrå"}, 1, false};
+    {"Harry", 50 , {"Köp bill hos Harry", "En god bil affär(för Harry!)","Hedelige Harrys Bilar"}, 3, false},
+    {"Farmor Anak", 30, {"Köp paj hos Farmor ANka", "Skynda innan Mårten ätit alla pajer"}, 2, false},
+    {"Ptter", 15, {"Låt Ptter bygga åt dig", "Bygga svart? Ring Petter"}, 2, true},
+    {"Långben", 40, {"Mysterier? Ring Lånben", "Långben fixar biffen"},2, false},
+    {"IOT Reklambyrå", 10, {"Synas här? IOT:s Reklambyrå"}, 1, false},
 };
 int customerCount = 5;
 
@@ -73,7 +74,7 @@ int pickCustomer() {
     if (A->specialRules){
         int currentMinute = (rand() %60);
         lcd ->Clear();
-        if (currentMinute % == 0) //Jämn och ljämna minuter
+        if (currentMinute % 2 == 0) //Jämn och ljämna minuter
         
             lcd->WriteText((char*)A->messages[0]); //jämn = scroll
 
@@ -97,10 +98,8 @@ int main(void){
     lcd.Clear();      // Clear the LCD
 
     lcd.WriteText((char *)"Hej hej");
-    printf("Hej hej\n");
-    int r = 12;
-    printf("Hej 2 %d\n",r);
-    // // //Sätt till INPUT_PULLUP
+    //lcd.WriteText((char*)customers);
+    
     // BIT_CLEAR(DDRB,BUTTON_PIN); // INPUT MODE
     // BIT_SET(PORTB,BUTTON_PIN); 
 
