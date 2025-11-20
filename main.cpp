@@ -53,7 +53,7 @@ int pickCustomer() {
     for (int i = 0; i < customerCount; i++) {
         if (i == lastCustomerIndex) weights[i] = 0;
         else weights[i] = customers[i].percentage;
-        totalWeight += weights[i];
+        totalVikt += weights[i];
 }
 
  int rnd = rand() % totalVikt;
@@ -66,7 +66,28 @@ int pickCustomer() {
 } 
 
 // Funktion att visa meddelande på LCDn????
- 
+
+ void showAd (HD44780* lcd, Advertiser* A) {
+
+    //Kund med specila regler
+    if (A->specialRules){
+        int currentMinute = (rand() %60);
+        lcd ->Clear();
+        if (currentMinute % == 0) //Jämn och ljämna minuter
+        
+            lcd->WriteText((char*)A->messages[0]); //jämn = scroll
+
+        else
+            lcd->WriteText((char*)A->messages[1]); //ojämn = text
+
+        return;
+        
+    }
+    //Normala kunder utan speciala regler
+    int msgIndeX = rand() % A->messageCount;
+    lcd->Clear();
+    lcd->WriteText((char*)A->messages[msgIndeX]);
+ }
 
 int main(void){
     init_serial();
