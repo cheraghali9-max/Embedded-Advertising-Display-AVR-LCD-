@@ -1,3 +1,4 @@
+#define __AVR_ATmega32U4__
 #include "lcd.h"
 
 HD44780::HD44780() {
@@ -57,7 +58,7 @@ void HD44780::Initialize(void) {
   LCD_DB4_DIR |= LCD_DB4;
   LCD_DB5_DIR |= LCD_DB5;
   LCD_DB6_DIR |= LCD_DB6;
-  LCD_DB7_DIR |= LCD_DB7;'
+  LCD_DB7_DIR |= LCD_DB7;
   
   LCD_RS_PORT = LCD_RS_PORT
     & ~(1 << LCD_E)
