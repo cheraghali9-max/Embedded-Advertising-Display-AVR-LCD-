@@ -1,3 +1,4 @@
+#define __AVR_ATmega32U4__
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
@@ -6,6 +7,9 @@
 #include <time.h>
 #include<string.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "lcd.h"
 #include "uart.h"
 
@@ -22,75 +26,19 @@
 #define BIT_FLIP(a,b) ((a) ^= (1ULL<<(b)))
 #define BIT_CHECK(a,b) (!!((a) & (1ULL<<(b)))) 
 
-
 #define BUTTON_IS_CLICKED(PINB,BUTTON_PIN) !BIT_CHECK(PINB,BUTTON_PIN)
 
-//Struktur för kunderna
-typedef struct 
+typedef enum
 {
-    const char* name;
-    int percentage;
-    const char* messages[3];
-    int messageCount;
-    bool specialRules;
-} Advertiser;
+    harrys,
+    Pajer_AB,
+    detektivbyrå,
+    Svartbyggen,
+    buyAdvert,
+}advert;
 
-// Kunder, procentvis och deras meddelanden
-Advertiser customers[] = {
-    {"Harry", 50 , {"Köp bill hos Harry", "En god bil affär(för Harry!)","Hedelige Harrys Bilar"}, 3, false},
-    {"Farmor Anak", 30, {"Köp paj hos Farmor ANka", "Skynda innan Mårten ätit alla pajer"}, 2, false},
-    {"Ptter", 15, {"Låt Ptter bygga åt dig", "Bygga svart? Ring Petter"}, 2, true},
-    {"Långben", 40, {"Mysterier? Ring Lånben", "Långben fixar biffen"},2, false},
-    {"IOT Reklambyrå", 10, {"Synas här? IOT:s Reklambyrå"}, 1, false},
-};
-int customerCount = 5;
-
-int lastCustomerIndex = -1; // Att inte räkan en kund 2 gångar i rad
-
-// Slumpa kunderna procentuellt baserad på deras belopp
-
-int pickCustomer() {
-    int totalVikt = 0;
-      int weights[5];
-
-    for (int i = 0; i < customerCount; i++) {
-        if (i == lastCustomerIndex) weights[i] = 0;
-        else weights[i] = customers[i].percentage;
-        totalVikt += weights[i];
-}
-
- int rnd = rand() % totalVikt;
-    for (int i = 0; i < customerCount; i++) {
-        if (rnd < weights[i]) return i;
-        rnd -= weights[i];
-    }
-
-    return 0;
-} 
-
-// Funktion att visa meddelande på LCDn????
-
- void showAd (HD44780* lcd, Advertiser* A) {
-
-    //Kund med specila regler
-    if (A->specialRules){
-        int currentMinute = (rand() %60);
-        lcd ->Clear();
-        if (currentMinute % 2 == 0) //Jämn och ljämna minuter
-        
-            lcd->WriteText((char*)A->messages[0]); //jämn = scroll
-
-        else
-            lcd->WriteText((char*)A->messages[1]); //ojämn = text
-
-        return;
-        
-    }
-    //Normala kunder utan speciala regler
-    int msgIndeX = rand() % A->messageCount;
-    lcd->Clear();
-    lcd->WriteText((char*)A->messages[msgIndeX]);
- }
+advert returnRandomAdvert();
+void scrollText(char *text);
 
 int main(void){
     init_serial();
@@ -99,9 +47,46 @@ int main(void){
     lcd.Initialize(); // Initialize the LCD
     lcd.Clear();      // Clear the LCD
 
-    lcd.WriteText((char *)"Hej hej");
-    //lcd.WriteText((char*)customers);
-    
+    int lastAdvert = buyAdvert;
+
+    while(1)
+    {
+        char result[15] = "result: ";
+
+        int currentAdvert;
+        do
+        {
+            currentAdvert = returnRandomAdvert();
+        } while (lastAdvert == currentAdvert);
+        lastAdvert = currentAdvert;
+
+        switch (currentAdvert)
+        {
+            case harrys:
+                strcat(result, "harrys");
+                break;
+            case Pajer_AB:
+                strcat(result, "pajer_ab");
+                break;
+            case detektivbyrå:
+                strcat(result, "detetivbyra");
+                break;
+            case Svartbyggen:
+                strcat(result, "svartbyggen");
+                break;
+            case buyAdvert:
+                strcat(result, "buy advert");
+                break;
+            default:
+                printf("error novalue returned");
+                break;
+        }
+
+        scrollText(result);
+        _delay_ms(1000);
+        lcd.Clear();
+    }
+    // // //Sätt till INPUT_PULLUP
     // BIT_CLEAR(DDRB,BUTTON_PIN); // INPUT MODE
     // BIT_SET(PORTB,BUTTON_PIN); 
 
@@ -112,4 +97,80 @@ int main(void){
     while(1){
     }
     return 0;
+}
+
+void scrollText(char *text)
+{
+    HD44780 lcd;
+
+    lcd.Initialize(); // Initialize the LCD
+    lcd.Clear();      // Clear the LCD
+    
+    for (int x = 16; x >= 0; x--)
+    {
+        char rText[20] = " ";
+        strncpy(rText, text, 16-x);
+        lcd.Clear();
+        lcd.GoTo(x, 0);
+        lcd.WriteText(rText);
+
+        _delay_ms(500);
+    }
+    for (int index = 1; index <= (int)strlen(text); index++)
+    {
+        char rText[20] = " ";
+        lcd.Clear();
+        lcd.GoTo(0, 0);
+        strncpy(rText, text + index, 16);
+        lcd.WriteText(rText);
+
+        _delay_ms(500);
+    }
+    
+}
+
+void flashingText(char *text)
+{
+    HD44780 lcd;
+
+    lcd.Initialize();
+    lcd.Clear();
+
+    for (int index = 0; index < 10; index++)
+    {
+        lcd.WriteText(text);
+        _delay_ms(500);
+        lcd.Clear();
+        _delay_ms(500);
+    }
+}
+
+advert returnRandomAdvert()
+{
+    // time(null) will always return same value
+    srand(time(NULL));
+    int value = rand() % (14499 + 1);
+
+    printf("%d ", value);
+    
+    if (value < 5000)
+    { // Hederlige Harrys Bilar
+        return harrys;
+    }
+    else if (value < 8000 && value >= 5000)
+    { // Farmor Ankas Pajer AB
+        return Pajer_AB;
+    }
+    else if (value < 12000 && value >= 8000)
+    { // Långbens detektivbyrå
+        return detektivbyrå;
+    }
+    else if (value < 13500 && value >= 12000)
+    { // Svarte Petters Svartbyggen
+        return Svartbyggen;
+    }
+    else
+    {// our own advert
+        return buyAdvert;
+    }
 }
