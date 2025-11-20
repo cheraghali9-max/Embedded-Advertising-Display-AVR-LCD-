@@ -38,6 +38,7 @@ advert returnRandomAdvert();
 void scrollText(char *text);
 
 int main(void){
+    init_serial();
     HD44780 lcd;
 
     lcd.Initialize(); // Initialize the LCD
