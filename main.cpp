@@ -126,6 +126,22 @@ void scrollText(char *text)
     
 }
 
+void flashingText(char *text)
+{
+    HD44780 lcd;
+
+    lcd.Initialize();
+    lcd.Clear();
+
+    for (int index = 0; index < 10; index++)
+    {
+        lcd.WriteText(text);
+        _delay_ms(500);
+        lcd.Clear();
+        _delay_ms(500);
+    }
+}
+
 advert returnRandomAdvert()
 {
     // time(null) will always return same value
