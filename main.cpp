@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <time.h>
+#include<string.h>
 #include <stdbool.h>
 #include "lcd.h"
 #include "uart.h"
