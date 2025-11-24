@@ -7,9 +7,6 @@
 #include <time.h>
 #include<string.h>
 #include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include "lcd.h"
 #include "uart.h"
 
@@ -30,15 +27,51 @@
 
 typedef enum
 {
-    harrys,
+    harrys_bilar,
     Pajer_AB,
-    detektivbyrå,
     Svartbyggen,
+    långbens_Detektivbyrå,
     buyAdvert,
 }advert;
 
+typedef struct 
+{
+  const char* name;
+  int payment;
+  const char* messages[3];
+  int messageCount;
+  bool illegal;
+} Advertiser;
+
+Advertiser customers[] = {
+    {"Harry bilar", 50 , {"Köp bill hos Harry",
+                    "En god bil affär(för Harry!)",
+                    "Hedelige Harrys Bilar"}, 3, false},
+
+    {"Farmor Anka: Pajer AB", 30, {"Köp paj hos Farmor Anka",
+                         "Skynda innan Mårten ätit alla pajer"}, 2, false},
+
+    {"Svarte Petter Svartbyggen:", 15, {"Låt Petter bygga åt dig",
+                    "Bygga svart? Ring Petter"}, 2, true},
+
+    {"Långben Detektivbyrå", 40, {"Mysterier? Ring Långben",
+                     "Långben fixar biffen"},2, false},
+
+    {"IOT Reklambyrå", 10, {"Synas här? IOT:s Reklambyrå"}, 1, false},
+};
+
+const int customerCount = sizeof(customers)/sizeof(customers[0]);
+
 advert returnRandomAdvert();
 void scrollText(char *text);
+
+//Enklare ADC noise läsning som ett random boost
+unsigned int adc_noise() {
+    ADMUX = 0b00001111; 
+    ADCSRA = 0b11000011;
+    _delay_ms(2);
+    return ADC;
+}
 
 int main(void){
     init_serial();
@@ -47,11 +80,13 @@ int main(void){
     lcd.Initialize(); // Initialize the LCD
     lcd.Clear();      // Clear the LCD
 
+      srand( adc_noise() ); // För riktigt random fungerade
+
     int lastAdvert = buyAdvert;
 
     while(1)
     {
-        char result[15] = "result: ";
+        char result[32] = "result: "; //Jag har ökat till dubbelt att unkvika overflow
 
         int currentAdvert;
         do
@@ -62,13 +97,13 @@ int main(void){
 
         switch (currentAdvert)
         {
-            case harrys:
+            case harrys_bilar:
                 strcat(result, "harrys");
                 break;
             case Pajer_AB:
                 strcat(result, "pajer_ab");
                 break;
-            case detektivbyrå:
+            case långbens_Detektivbyrå:
                 strcat(result, "detetivbyra");
                 break;
             case Svartbyggen:
@@ -148,14 +183,14 @@ void flashingText(char *text)
 advert returnRandomAdvert()
 {
     // time(null) will always return same value
-    srand(time(NULL));
+    //srand(time(NULL)); Fel att använda den för att den returnerar samma värde varje gång. Det blir inte slump
     int value = rand() % (14499 + 1);
 
     printf("%d ", value);
     
     if (value < 5000)
     { // Hederlige Harrys Bilar
-        return harrys;
+        return harrys_bilar;
     }
     else if (value < 8000 && value >= 5000)
     { // Farmor Ankas Pajer AB
@@ -163,7 +198,7 @@ advert returnRandomAdvert()
     }
     else if (value < 12000 && value >= 8000)
     { // Långbens detektivbyrå
-        return detektivbyrå;
+        return långbens_Detektivbyrå;
     }
     else if (value < 13500 && value >= 12000)
     { // Svarte Petters Svartbyggen
