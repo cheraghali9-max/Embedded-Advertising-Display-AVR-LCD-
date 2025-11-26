@@ -30,7 +30,8 @@ typedef enum
     harrys_bilar,
     Pajer_AB,
     Svartbyggen,
-    långbens_Detektivbyrå,
+    longbens_Detektivbyro,
+    IOT_Reklambyrå,
     buyAdvert,
 }advert;
 
@@ -67,9 +68,12 @@ void scrollText(char *text);
 
 //Enklare ADC noise läsning som ett random boost
 unsigned int adc_noise() {
-    ADMUX = 0b00001111; 
-    ADCSRA = 0b11000011;
+    ADMUX = (1 << REFS0) | 7; 
+    ADCSRA = (1 << ADEN) 
+    | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
     _delay_ms(2);
+     ADCSRA |= (1 << ADSC); //börjar konversion
+      while (ADCSRA & (1 << ADSC)); // väntar till konversion är klar
     return ADC;
 }
 
@@ -103,11 +107,13 @@ int main(void){
             case Pajer_AB:
                 strcat(result, "pajer_ab");
                 break;
-            case långbens_Detektivbyrå:
+            case longbens_Detektivbyro:
                 strcat(result, "detetivbyra");
                 break;
             case Svartbyggen:
                 strcat(result, "svartbyggen");
+            case IOT_Reklambyrå:
+                strcat (result, "IOT-Reklambyrå");
                 break;
             case buyAdvert:
                 strcat(result, "buy advert");
@@ -144,7 +150,12 @@ void scrollText(char *text)
     for (int x = 16; x >= 0; x--)
     {
         char rText[20] = " ";
-        strncpy(rText, text, 16-x);
+          size_t copyLen = (size_t)(16 - x);
+        if (copyLen > 16) copyLen = 16;
+        if (copyLen > 0) {
+            strncpy(rText, text, copyLen);
+        }
+        rText[copyLen] = '\0'; 
         lcd.Clear();
         lcd.GoTo(x, 0);
         lcd.WriteText(rText);
@@ -156,12 +167,13 @@ void scrollText(char *text)
         char rText[20] = " ";
         lcd.Clear();
         lcd.GoTo(0, 0);
+        // Ändring. Säkrat null terminated
         strncpy(rText, text + index, 16);
+        rText[16] = '\0';
         lcd.WriteText(rText);
 
         _delay_ms(500);
     }
-    
 }
 
 void flashingText(char *text)
@@ -198,14 +210,19 @@ advert returnRandomAdvert()
     }
     else if (value < 12000 && value >= 8000)
     { // Långbens detektivbyrå
-        return långbens_Detektivbyrå;
+        return longbens_Detektivbyro;
     }
     else if (value < 13500 && value >= 12000)
     { // Svarte Petters Svartbyggen
         return Svartbyggen;
     }
-    else
-    {// our own advert
+    else if (value <1000 && value >= 0)
+    { //REKLAM FÖR OSS SJÄLVA
+      return IOT_Reklambyrå;
+    }
+    
+    else 
+    {// ops SAMMA REKLAM SOM IOT.REKLAMBYRÅ
         return buyAdvert;
     }
 }
