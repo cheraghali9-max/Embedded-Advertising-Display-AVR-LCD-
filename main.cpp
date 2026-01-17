@@ -10,7 +10,9 @@
 #include "lcd.h"
 #include "uart.h"
 
-//static volatile uint32_t g_millis = 0u;
+//För specialreger nedan
+
+//static volatile uint32_t g_millis = 0u; 
 
 // Advert messages defined as static char arrays since we don't have access to
 // standard cpp.
